@@ -42,7 +42,7 @@ def login():
     }
     r = s.post(URL,data)
     with open('.session.pickle', 'wb') as fp:
-        pickle.dump(s, fp)
+        pickle.dump((s,csrftoken), fp)
 
 def download_test(contest):
     tests = dict()
@@ -84,7 +84,6 @@ def create_inital_cppfiles(contest):
 def run_editor():
     os.system('code .')
 
-
 def init():
     print("** init **")
     try:
@@ -95,7 +94,6 @@ def init():
         print("error in init")
         return
     print("init success")
-
 
 def run(fn):
     print("compile "+fn)
@@ -114,6 +112,7 @@ def build_and_test(contest,problem):
     test = json.load(f)
     test = test["problem "+problem]
     i = 0
+    result = True
     while ("input {}".format(i) in test):
         f = open("temp.txt" ,'w')
         
@@ -125,16 +124,39 @@ def build_and_test(contest,problem):
         print("input {}".format(i))
         res = subprocess.run("./a.out",stdin = f, stdout=subprocess.PIPE)
         f.close()
+        os.system("rm temp.txt")
         res = res.stdout
         if(test["output {}".format(i)].encode() == res):
             print("OK!")
         else:
+            print("----input-----")
+            print(test_in)
+            print("----result----")
             print(res)
+            print("---expected---")
             print(test["output {}".format(i)].encode())
+            result=False
         
         i = i+1
+    if i==0:
+        print("there are no test file")
+        result = False
+    return result
 
-    os.system("rm temp.txt")
+def submit(contest,problem):
+    fp =  open('.session.pickle','rb') 
+    obj = pickle.load(fp)
+    (s,csrftoken) = obj
+    URL = "https://beta.atcoder.jp/contests/"+contest+"/submit"
+    f = open("./src/main_"+problem+".cpp",'r')
+    source = f.read()
+    data = {
+        "csrf_token":csrftoken,
+        "data.LanguageId":"3003",
+        "data.TaskScreenName": contest+'_'+problem,
+        "sourceCode":source
+    }
+    s.post(URL,data)
 
 if __name__ == "__main__":
     print("this is atcoder supporter")
@@ -160,7 +182,19 @@ if __name__ == "__main__":
             fn = "./src/main.cpp"
             run(fn)
         else:
-            build_and_test(argvs[2],argvs[3])
+            r = build_and_test(argvs[2],argvs[3])
+            if r:
+                print("Do you want to submit this right now?  y/n")
+                while True :
+                    ans = input()
+                    if(ans=='y'):
+                        submit(argvs[2],argvs[3])
+                        break
+                    elif(ans!='n'):
+                        print("y/n")
+                    else:
+                        break
+
 
     elif argvs[1] == "load":
         if n==2:
