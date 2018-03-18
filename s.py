@@ -18,11 +18,14 @@ int main(){
 
 }
 '''
-def init_with_contests():
-    contest = 'arc091'
+def init_with_contests(contest):
     tests = dict()
     f = open('./tests/'+contest+'.json','w')
-    for x in ['a','b','c','d']:
+    problem_index =[]
+    if contest[:3] == 'arc':
+        problem_index = ['a','b','c','d']
+
+    for x in problem_index:
         target_url = 'https://beta.atcoder.jp/contests/'+contest +'/tasks/'+contest+'_'+x
         r = requests.get(target_url)
         soup = BeautifulSoup(r.text, 'lxml')
@@ -30,7 +33,6 @@ def init_with_contests():
         n = len(pres)
         assert(n % 4 == 2)
         samples = pres[1:n//2]
-        print(samples)
 
         t = dict()
         for i in range(len(samples)//2):
@@ -38,8 +40,22 @@ def init_with_contests():
             t["output {}".format(i)] = samples[i*2+1].string
 
         tests["problem "+x] = t
-        
+
     json.dump(tests,f,indent=4)
+
+
+    print("finish download tests")
+    try:
+        for x in problem_index:
+
+            f = open(filename[:-4]+'_'+x+'.cpp','w')
+            f.write(inital_code)
+            f.close
+    except:
+        print("error in creating initial cpp file")
+        return
+    print("init success")
+    os.system('code .')
 
 
 def init():
@@ -70,7 +86,10 @@ if __name__ == "__main__":
     if n==1:
         print("コマンドライン引数が必要です")
     elif argvs[1] == "init":
-        init()
+        if n==2:
+            init()
+        else:
+            init_with_contests(argvs[2])
     elif argvs[1] == "run":
         if n==2:
             fn = filename
@@ -79,4 +98,4 @@ if __name__ == "__main__":
         run(fn)
 
     elif argvs[1] == 'test':
-        init_with_contests()
+        init_with_contests('arc091')
