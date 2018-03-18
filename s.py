@@ -3,6 +3,7 @@ import sys
 import os
 import requests
 from bs4 import BeautifulSoup
+import json
 
 filename = 'main.cpp'
 
@@ -19,6 +20,8 @@ int main(){
 '''
 def init_with_contests():
     contest = 'arc091'
+    tests = dict()
+    f = open('./tests/'+contest+'.json','w')
     for x in ['a','b','c','d']:
         target_url = 'https://beta.atcoder.jp/contests/'+contest +'/tasks/'+contest+'_'+x
         r = requests.get(target_url)
@@ -28,6 +31,15 @@ def init_with_contests():
         assert(n % 4 == 2)
         samples = pres[1:n//2]
         print(samples)
+
+        t = dict()
+        for i in range(len(samples)//2):
+            t["input {}".format(i)] = samples[i*2].string
+            t["output {}".format(i)] = samples[i*2+1].string
+
+        tests["problem "+x] = t
+        
+    json.dump(tests,f,indent=4)
 
 
 def init():
