@@ -1,5 +1,5 @@
 main.cpp
-password.json
-session.pickle
+.password.json
+.session.pickle
 /src/
 /tests/

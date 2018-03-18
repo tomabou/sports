@@ -6,8 +6,6 @@ from bs4 import BeautifulSoup
 import pickle
 import json
 
-filename = 'main.cpp'
-
 inital_code = '''#include<iostream>
 #include<vector>
 #include<algorithm>
@@ -28,7 +26,7 @@ def get_ploblem_index(contest):
 
 
 def login():
-    f = open("./password.json",'r')
+    f = open("./.password.json",'r')
     account = json.load(f)
     s = requests.session()
     URL = "https://beta.atcoder.jp/login"
@@ -42,7 +40,7 @@ def login():
         "username":account["username"]
     }
     r = s.post(URL,data)
-    with open('session.pickle', 'wb') as fp:
+    with open('.session.pickle', 'wb') as fp:
         pickle.dump(s, fp)
 
 def download_test(contest):
@@ -88,7 +86,7 @@ def run_editor():
 def init():
     print("** init **")
     try:
-        f = open(filename,'w')
+        f = open("./src/main.cpp",'w')
         f.write(inital_code)
         f.close
     except:
@@ -125,7 +123,7 @@ if __name__ == "__main__":
             run_editor()
     elif argvs[1] == "run":
         if n==2:
-            fn = filename
+            fn = "./src/main.cpp"
         else:
             fn = argvs[2]
         run(fn)
