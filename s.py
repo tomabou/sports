@@ -3,6 +3,7 @@ import sys
 import os
 import requests
 from bs4 import BeautifulSoup
+import pickle
 import json
 
 filename = 'main.cpp'
@@ -19,7 +20,7 @@ int main(){
 }
 '''
 
-def login_test():
+def login():
     f = open("./password.json",'r')
     account = json.load(f)
     s = requests.session()
@@ -37,14 +38,11 @@ def login_test():
     }
 
     r = s.post(URL,data)
+    
+    with open('session.pickle', 'wb') as fp:
+        pickle.dump(s, fp)
 
-
-    URL = "https://beta.atcoder.jp/contests/arc091/submissions/me"
-    r = s.get(URL)
-    soup = BeautifulSoup(r.text, 'lxml')
-    print(soup)
-
-def init_with_contests(contest):
+def load_with_contests(contest):
     tests = dict()
     f = open('./tests/'+contest+'.json','w')
     problem_index =[]
@@ -69,8 +67,12 @@ def init_with_contests(contest):
 
     json.dump(tests,f,indent=4)
 
-
     print("finish download tests")
+
+def init_with_contests(contest):
+    problem_index =[]
+    if contest[:3] == 'arc':
+        problem_index = ['a','b','c','d']
     try:
         for x in problem_index:
 
@@ -115,6 +117,7 @@ if __name__ == "__main__":
         if n==2:
             init()
         else:
+            load_with_contests(argvs[2])
             init_with_contests(argvs[2])
     elif argvs[1] == "run":
         if n==2:
@@ -122,6 +125,13 @@ if __name__ == "__main__":
         else:
             fn = argvs[2]
         run(fn)
+    elif argvs[1] == "load":
+        if n==2:
+            print("コンテスト名を入力してください")
+        else:
+            load_with_contests(argvs[2])
+    elif argvs[1] == "login":
+        login()
 
     elif argvs[1] == 'test':
-        login_test()
+        login()
