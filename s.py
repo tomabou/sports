@@ -18,6 +18,32 @@ int main(){
 
 }
 '''
+
+def login_test():
+    f = open("./password.json",'r')
+    account = json.load(f)
+    s = requests.session()
+    URL = "https://beta.atcoder.jp/login"
+    r = s.get(URL)
+    soup = BeautifulSoup(r.text, 'lxml')
+    csrftoken = (soup.find_all("input")[0]["value"])
+
+
+
+    data = {
+        "csrf_token":csrftoken,
+        "password":account["password"],
+        "username":account["username"]
+    }
+
+    r = s.post(URL,data)
+
+
+    URL = "https://beta.atcoder.jp/contests/arc091/submissions/me"
+    r = s.get(URL)
+    soup = BeautifulSoup(r.text, 'lxml')
+    print(soup)
+
 def init_with_contests(contest):
     tests = dict()
     f = open('./tests/'+contest+'.json','w')
@@ -98,4 +124,4 @@ if __name__ == "__main__":
         run(fn)
 
     elif argvs[1] == 'test':
-        init_with_contests('arc091')
+        login_test()
