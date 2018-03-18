@@ -1,11 +1,12 @@
 #!/usr/bin/env python
 import sys
 import os
+import requests
+from bs4 import BeautifulSoup
 
 filename = 'main.cpp'
 
-inital_code = '''
-#include<iostream>
+inital_code = '''#include<iostream>
 #include<vector>
 #include<algorithm>
 
@@ -16,6 +17,17 @@ int main(){
 
 }
 '''
+def init_with_contests():
+    contest = 'arc091'
+    for x in ['a','b','c','d']:
+        target_url = 'https://beta.atcoder.jp/contests/'+contest +'/tasks/'+contest+'_'+x
+        r = requests.get(target_url)
+        soup = BeautifulSoup(r.text, 'lxml')
+        pres = soup.find_all('pre')
+        n = len(pres)
+        assert(n % 4 == 2)
+        samples = pres[1:n//2]
+        print(samples)
 
 
 def init():
@@ -53,3 +65,6 @@ if __name__ == "__main__":
         else:
             fn = argvs[2]
         run(fn)
+
+    elif argvs[1] == 'test':
+        init_with_contests()
