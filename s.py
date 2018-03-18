@@ -5,6 +5,7 @@ import requests
 from bs4 import BeautifulSoup
 import pickle
 import json
+import subprocess
 
 inital_code = '''#include<iostream>
 #include<vector>
@@ -59,8 +60,8 @@ def download_test(contest):
 
         t = dict()
         for i in range(len(samples)//2):
-            t["input {}".format(i)] = samples[i*2].string
-            t["output {}".format(i)] = samples[i*2+1].string
+            t["input {}".format(i)] = samples[i*2].string.replace('\r','')
+            t["output {}".format(i)] = samples[i*2+1].string.replace('\r','')
 
         tests["problem "+x] = t
 
@@ -69,6 +70,7 @@ def download_test(contest):
     print("finish download tests")
 
 def create_inital_cppfiles(contest):
+    
     problem_index = get_ploblem_index(contest)
     try:
         for x in problem_index:
@@ -101,6 +103,38 @@ def run(fn):
     print("run program \n")
     os.system('./a.out')
 
+def build_and_test(contest,problem):
+    filename = "./src/main_"+problem+".cpp"
+
+    print("compile "+filename)
+    os.system('g++ -std=c++14 '+filename)
+    print("test program \n")
+
+    f = open("./tests/"+contest + ".json" ,'r')
+    test = json.load(f)
+    test = test["problem "+problem]
+    i = 0
+    while ("input {}".format(i) in test):
+        f = open("temp.txt" ,'w')
+        
+        print("-------------------------------")
+        test_in = test["input {}".format(i)]
+        f.write(test_in)
+        f.close()
+        f = open("temp.txt",'r')
+        print("input {}".format(i))
+        res = subprocess.run("./a.out",stdin = f, stdout=subprocess.PIPE)
+        f.close()
+        res = res.stdout
+        if(test["output {}".format(i)].encode() == res):
+            print("OK!")
+        else:
+            print(res)
+            print(test["output {}".format(i)].encode())
+        
+        i = i+1
+
+    os.system("rm temp.txt")
 
 if __name__ == "__main__":
     print("this is atcoder supporter")
@@ -124,9 +158,10 @@ if __name__ == "__main__":
     elif argvs[1] == "run":
         if n==2:
             fn = "./src/main.cpp"
+            run(fn)
         else:
-            fn = argvs[2]
-        run(fn)
+            build_and_test(argvs[2],argvs[3])
+
     elif argvs[1] == "load":
         if n==2:
             print("コンテスト名を入力してください")
