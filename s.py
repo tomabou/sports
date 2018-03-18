@@ -19,6 +19,13 @@ int main(){
 
 }
 '''
+def get_ploblem_index(contest):
+    if contest[:3] == 'arc':
+        return ['a','b','c','d']
+    else: 
+        print('undefind')
+        return []
+
 
 def login():
     f = open("./password.json",'r')
@@ -29,25 +36,19 @@ def login():
     soup = BeautifulSoup(r.text, 'lxml')
     csrftoken = (soup.find_all("input")[0]["value"])
 
-
-
     data = {
         "csrf_token":csrftoken,
         "password":account["password"],
         "username":account["username"]
     }
-
     r = s.post(URL,data)
-    
     with open('session.pickle', 'wb') as fp:
         pickle.dump(s, fp)
 
-def load_with_contests(contest):
+def download_test(contest):
     tests = dict()
     f = open('./tests/'+contest+'.json','w')
-    problem_index =[]
-    if contest[:3] == 'arc':
-        problem_index = ['a','b','c','d']
+    problem_index = get_ploblem_index(contest)
 
     for x in problem_index:
         target_url = 'https://beta.atcoder.jp/contests/'+contest +'/tasks/'+contest+'_'+x
@@ -69,20 +70,18 @@ def load_with_contests(contest):
 
     print("finish download tests")
 
-def init_with_contests(contest):
-    problem_index =[]
-    if contest[:3] == 'arc':
-        problem_index = ['a','b','c','d']
+def create_inital_cppfiles(contest):
+    problem_index = get_ploblem_index(contest)
     try:
         for x in problem_index:
-
-            f = open(filename[:-4]+'_'+x+'.cpp','w')
+            f = open('./src/main_'+x+'.cpp','w')
             f.write(inital_code)
             f.close
     except:
         print("error in creating initial cpp file")
         return
-    print("init success")
+
+def run_editor():
     os.system('code .')
 
 
@@ -96,7 +95,6 @@ def init():
         print("error in init")
         return
     print("init success")
-    os.system('code .')
 
 
 def run(fn):
@@ -108,6 +106,10 @@ def run(fn):
 
 if __name__ == "__main__":
     print("this is atcoder supporter")
+    if not os.path.exists("./src"):
+        os.mkdir("./src")
+    if not os.path.exists("./tests"):
+        os.mkdir("./tests")
 
     argvs = sys.argv
     n = len(argvs)
@@ -116,9 +118,11 @@ if __name__ == "__main__":
     elif argvs[1] == "init":
         if n==2:
             init()
+            run_editor()
         else:
-            load_with_contests(argvs[2])
-            init_with_contests(argvs[2])
+            download_test(argvs[2])
+            create_inital_cppfiles(argvs[2])
+            run_editor()
     elif argvs[1] == "run":
         if n==2:
             fn = filename
@@ -129,7 +133,7 @@ if __name__ == "__main__":
         if n==2:
             print("コンテスト名を入力してください")
         else:
-            load_with_contests(argvs[2])
+            download_test(argvs[2])
     elif argvs[1] == "login":
         login()
 

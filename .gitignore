@@ -1,3 +1,5 @@
 main.cpp
 password.json
 session.pickle
+/src/
+/test/
