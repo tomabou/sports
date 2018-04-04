@@ -10,9 +10,11 @@ import subprocess
 inital_code = '''#include<iostream>
 #include<vector>
 #include<algorithm>
+#include<cmath>
 
 using namespace std;
 using ll = long long;
+using vl = vector<ll>;
 
 int main(){
 
