@@ -13,6 +13,8 @@ inital_code = '''#include<iostream>
 
 using namespace std;
 using ll = long long;
+using vi = vector<int>;
+using vl = vector<ll>;
 
 int main(){
 
@@ -132,9 +134,9 @@ def build_and_test(contest,problem):
             print("----input-----")
             print(test_in)
             print("----result----")
-            print(res)
+            print(res.decode())
             print("---expected---")
-            print(test["output {}".format(i)].encode())
+            print(test["output {}".format(i)])
             result=False
         
         i = i+1
