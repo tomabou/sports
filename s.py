@@ -10,6 +10,7 @@ import subprocess
 inital_code = '''#include<iostream>
 #include<vector>
 #include<algorithm>
+#include<cmath>
 
 using namespace std;
 using ll = long long;
@@ -72,6 +73,7 @@ def download_test(contest):
     print("finish download tests")
 
 def create_inital_cppfiles(contest):
+    tests = dict()
     
     problem_index = get_ploblem_index(contest)
     try:
@@ -85,6 +87,9 @@ def create_inital_cppfiles(contest):
 
 def run_editor():
     os.system('code .')
+
+def change_contest_name(contest):
+    return contest.lower()
 
 def init():
     print("** init **")
@@ -176,21 +181,23 @@ if __name__ == "__main__":
             init()
             run_editor()
         else:
-            download_test(argvs[2])
-            create_inital_cppfiles(argvs[2])
+            contest = change_contest_name(argvs[2])
+            download_test(contest)
+            create_inital_cppfiles(contest)
             run_editor()
     elif argvs[1] == "run":
         if n==2:
             fn = "./src/main.cpp"
             run(fn)
         else:
-            r = build_and_test(argvs[2],argvs[3])
+            contest = change_contest_name(argvs[2])
+            r = build_and_test(contest,argvs[3])
             if r:
                 print("Do you want to submit this right now?  y/n")
                 while True :
                     ans = input()
                     if(ans=='y'):
-                        submit(argvs[2],argvs[3])
+                        submit(contest,argvs[3])
                         break
                     elif(ans!='n'):
                         print("y/n")
@@ -202,7 +209,8 @@ if __name__ == "__main__":
         if n==2:
             print("コンテスト名を入力してください")
         else:
-            download_test(argvs[2])
+            contest = change_contest_name(argvs[2])
+            download_test(contest)
     elif argvs[1] == "login":
         login()
 
