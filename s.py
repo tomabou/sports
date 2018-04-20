@@ -104,7 +104,7 @@ def init():
 
 def run(fn):
     print("compile "+fn)
-    os.system('g++ -std=c++14 '+fn)
+    os.system('g++ -std=c++14 -Wall'+fn)
     print("run program \n")
     os.system('./a.out')
 
@@ -112,7 +112,7 @@ def build_and_test(contest,problem):
     filename = "./src/main_"+problem+".cpp"
 
     print("compile "+filename)
-    os.system('g++ -std=c++14 '+filename)
+    os.system('g++ -std=c++14 -Wall '+filename)
     print("test program \n")
 
     f = open("./tests/"+contest + ".json" ,'r')
