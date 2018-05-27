@@ -1,7 +1,5 @@
 main.cpp
-.password.json
-.session.pickle
+.*
 /src/
 /tests/
 a.out
-.vscode
