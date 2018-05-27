@@ -1,5 +1,6 @@
 main.cpp
 .*
-/src/
-/tests/
+/src/*
+/tests/*
 a.out
+!.gitkeep

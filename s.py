@@ -24,13 +24,30 @@ int main(){
 def get_ploblem_index(contest):
     if contest[:3] == 'arc':
         return ['a','b','c','d']
+    if contest[:3] == 'agc':
+        return ['a','b','c','d','e','f']
     else: 
-        print('undefind')
+        print("the contest is not supported")
         return []
 
+password_path = "./.password.json"
+def save_password():
+    print("atcoderのユーザーidを入力してください")
+    name = input()
+    print("パスワードを入力してください")
+    password = input()
+    data = {
+        "password":password,
+        "username":name
+    }
+    f = open(password_path,'w')
+    json.dump(data,f,indent=4)
+    print(password_path+"に保存されたので、次回からは入力不要です")
 
 def login():
-    f = open("./.password.json",'r')
+    if not os.path.exists(password_path):
+        save_password()
+    f = open(password_path,'r')
     account = json.load(f)
     s = requests.session()
     URL = "https://beta.atcoder.jp/login"
@@ -73,8 +90,6 @@ def download_test(contest):
     print("finish download tests")
 
 def create_inital_cppfiles(contest):
-    tests = dict()
-    
     problem_index = get_ploblem_index(contest)
     try:
         for x in problem_index:
@@ -192,17 +207,18 @@ if __name__ == "__main__":
         else:
             contest = change_contest_name(argvs[2])
             r = build_and_test(contest,argvs[3])
-            if r:
-                print("Do you want to submit this right now?  y/n")
-                while True :
-                    ans = input()
-                    if(ans=='y'):
-                        submit(contest,argvs[3])
-                        break
-                    elif(ans!='n'):
-                        print("y/n")
-                    else:
-                        break
+            if not r:
+                print("いくつかテストケースに失敗しています")
+            print("Do you want to submit this right now?  y/n")
+            while True :
+                ans = input()
+                if(ans=='y'):
+                    submit(contest,argvs[3])
+                    break
+                elif(ans!='n'):
+                    print("y/n")
+                else:
+                    break
 
 
     elif argvs[1] == "load":
