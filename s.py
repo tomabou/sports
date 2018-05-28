@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 import sys
 import os
 import requests
@@ -190,7 +190,7 @@ if __name__ == "__main__":
     argvs = sys.argv
     n = len(argvs)
     if n==1:
-        print("コマンドライン引数が必要です")
+        print("コマンドライン引数が必要です\n使い方はreadmeを見てください")
     elif argvs[1] == "init":
         if n==2:
             init()
