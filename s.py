@@ -50,7 +50,7 @@ def login():
     f = open(password_path,'r')
     account = json.load(f)
     s = requests.session()
-    URL = "https://beta.atcoder.jp/login"
+    URL = "https://atcoder.jp/login"
     r = s.get(URL)
     soup = BeautifulSoup(r.text, 'lxml')
     csrftoken = (soup.find_all("input")[0]["value"])
@@ -70,13 +70,17 @@ def download_test(contest):
     problem_index = get_ploblem_index(contest)
 
     for x in problem_index:
-        target_url = 'https://beta.atcoder.jp/contests/'+contest +'/tasks/'+contest+'_'+x
+        target_url = 'https://atcoder.jp/contests/'+contest +'/tasks/'+contest+'_'+x
         r = requests.get(target_url)
         soup = BeautifulSoup(r.text, 'lxml')
         pres = soup.find_all('pre')
         n = len(pres)
-        assert(n % 4 == 2)
-        samples = pres[1:n//2]
+        if n % 4 == 2:
+            samples = pres[1:n//2]
+        elif n%4 == 0:
+            samples = pres[2:n//2]
+        else:
+            raise
 
         t = dict()
         for i in range(len(samples)//2):
@@ -149,6 +153,10 @@ def build_and_test(contest,problem):
         os.system("rm temp.txt")
         res = res.stdout
         if(test["output {}".format(i)].encode() == res):
+            print("----input-----")
+            print(test_in)
+            print("----result----")
+            print(res.decode())
             print("OK!")
         else:
             print("----input-----")
@@ -169,7 +177,7 @@ def submit(contest,problem):
     fp =  open('.session.pickle','rb') 
     obj = pickle.load(fp)
     (s,csrftoken) = obj
-    URL = "https://beta.atcoder.jp/contests/"+contest+"/submit"
+    URL = "https://atcoder.jp/contests/"+contest+"/submit"
     f = open("./src/main_"+problem+".cpp",'r')
     source = f.read()
     data = {

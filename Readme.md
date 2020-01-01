@@ -6,9 +6,13 @@ atcoderの補助ツールです。
 - python3
 - g++
 
+- bs4
+- lxml
+
 ubuntuでしか試していませんが、python3の環境があれば動くと思います
 
 ## How to use
+必要なpythonライブラリをpipなどで入れておきます
 まずcloneします。
 ```
 git clone https://github.com/tomabou/sports.git
